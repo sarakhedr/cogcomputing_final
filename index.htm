@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link href="https://fonts.googleapis.com/css?family=Fira+Sans:300" rel="stylesheet">
+<style>
+
+body{
+	background-color: #941B1B;
+}
+
+div { /* For all blocks faded in*/
+	opacity: 0;
+    background: none;
+    animation: fadein 4s;
+    animation-fill-mode: forwards;
+}
+
+@keyframes fadein{ /* Fade in animation*/
+	from {opacity: 0;}
+	to {opacity: 1;}
+}
+
+input[type=text], textarea{ /* Text box parameters*/
+    width: 750px;
+    padding: 12px;
+    border: 1px white;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-top: 6px;
+    margin-bottom: 16px;
+    resize: vertical;
+}
+
+form{ /* Hides textbox initially*/
+	display: none;
+	box
+}
+
+.btn-group .button { /* Button parameters*/
+    background-color: white; 
+    border-radius: 5px;
+    border: 1px solid white;
+    color: #941B1B;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    float: center;
+    transition-duration: .5s;
+}
+
+.btn-group .button:hover { /* Button mouseover animation*/
+    background-color: #941B1B;
+    color: white;
+}
+</style>
+</head>
+
+
+<body>
+<center>
+<div style="width: 1000px; height: 150px; color: white"><p style="font-family: 'Fira Sans', sans-serif; font-size: 300%">Welcome to the Emotional Assistant!</p></div>
+
+
+<div class="btn-group">
+  <button class="button" onclick="button1()">Add a text entry</button>
+  <button class="button">Add a voice entry</button>
+  <button class="button">View previous entries</button>
+  <button class="button">View analysis</button>
+</div>
+
+
+
+
+<br><br><br><br><br><br>
+
+<div id="textentry" style="display: none; animation: fadein .75s; animation-fill-mode: forwards;">
+	<textarea type="text" style="height: 200px" placeholder="Today I..."></textarea><br>
+	<submitButton class="btn-group">
+		<button class="button">Submit</button>
+	</submitButton>
+
+</div>
+
+
+
+
+
+<script> /* Script for hiding blocks when clicking on a different button*/
+function button1() {
+	var x = document.getElementById("textentry");
+    if (x.style.display != "block") {
+        x.style.display = "block";
+    } /*else {
+        x.style.display = "none";
+    }*/
+}
+</script>
+
+</center>
+
+</body>
+</html>
