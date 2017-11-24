@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+<script src="js/audiodisplay.js"></script>
+<script src="js/recorderjs/recorder.js"></script>
+<script src="js/main.js"></script>
 <link href="https://fonts.googleapis.com/css?family=Fira+Sans:300" rel="stylesheet">
 <style>
 
@@ -11,11 +14,60 @@ body{
 div { /* For all blocks faded in*/
 	opacity: 0;
     background: none;
+
+    -moz-animation: fadein 4s;
+    -moz-animation-fill-mode: forwards;
+
+    -webkit-animation: fadein 4s;
+    -webkit-animation-fill-mode: forwards;
+
     animation: fadein 4s;
     animation-fill-mode: forwards;
 }
 
+.txt { /* For all blocks faded in*/
+	opacity: 0;
+	display: none;
+    background: none;
+
+    -moz-animation: fadein .75s;
+    -moz-animation-fill-mode: forwards;
+
+    -webkit-animation: fadein .75s;
+    -webkit-animation-fill-mode: forwards;
+
+    animation: fadein .75s;
+    animation-fill-mode: forwards;
+}
+
+.audio { /* For all blocks faded in*/
+	opacity: 0;
+	display: none;
+    background: none;
+
+    -moz-animation: fadein .75s;
+    -moz-animation-fill-mode: forwards;
+
+    -webkit-animation: fadein .75s;
+    -webkit-animation-fill-mode: forwards;
+
+    animation: fadein .75s;
+    animation-fill-mode: forwards;
+}
+
+
+
 @keyframes fadein{ /* Fade in animation*/
+	from {opacity: 0;}
+	to {opacity: 1;}
+}
+
+@-webkit-keyframes fadein{ /* Fade in animation*/
+	from {opacity: 0;}
+	to {opacity: 1;}
+}
+
+@-moz-keyframes fadein{ /* Fade in animation*/
 	from {opacity: 0;}
 	to {opacity: 1;}
 }
@@ -33,10 +85,9 @@ input[type=text], textarea{ /* Text box parameters*/
 
 form{ /* Hides textbox initially*/
 	display: none;
-	box
 }
 
-.btn-group .button { /* Button parameters*/
+.btn-group .button, .button { /* Button parameters*/
     background-color: white; 
     border-radius: 5px;
     border: 1px solid white;
@@ -55,6 +106,46 @@ form{ /* Hides textbox initially*/
     background-color: #941B1B;
     color: white;
 }
+
+.button:hover { /* Button mouseover animation*/
+    background-color: #941B1B;
+    color: white;
+}
+
+#record { height: 15vh; } /* AUDIO CODE FROM https://webaudiodemos.appspot.com/AudioRecorder/index.html */
+#record.recording { 
+	background: red;
+	background: -webkit-radial-gradient(center, ellipse cover, #ff0000 0%, #941B1B 75%, #941B1B 100%,#7db9e8 100%); 
+	background: -moz-radial-gradient(center, ellipse cover, #ff0000 0%, #941B1B 75%, #941B1B 100%,#7db9e8 100%); 
+	background: radial-gradient(center, ellipse cover, #ff0000 0%, #941B1B 75%, #941B1B 100%,#7db9e8 100%); 
+}
+
+#controls {
+	display: none;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-around;
+	height: 20%;
+	width: 100%;
+}
+
+#save, #save img { height: 10vh; }
+#save { opacity: 0.25;}
+#save[download] { opacity: 1;}
+#viz {
+	height: 80%;
+	width: 100%;
+	display: none;
+	flex-direction: column;
+	justify-content: space-around;
+	align-items: center;
+}
+@media (orientation: landscape) {
+	body { flex-direction: row;}
+	#controls { flex-direction: row; height: 100%; width: 10%;}
+	#viz { height: 100%; width: 90%;}
+}
+
 </style>
 </head>
 
@@ -66,9 +157,24 @@ form{ /* Hides textbox initially*/
 
 <div class="btn-group">
   <button class="button" onclick="button1()">Add a text entry</button>
-  <button class="button">Add a voice entry</button>
+  <button class="button" onclick="button2()">Add a voice entry</button>
   <button class="button">View previous entries</button>
   <button class="button">View analysis</button>
+</div>
+
+
+<div id="viz" class="audio">
+	<canvas id="analyser" width="440" height="220"></canvas>
+	<canvas id="wavedisplay" width="440" height="220"></canvas>
+</div>
+
+
+
+<div id="controls" class="audio">
+	
+	<img id="record" src="img/mic128.png" onclick="toggleRecording(this);">
+	<a id="save" href="#"><img src="img/save.svg"></a>
+
 </div>
 
 
@@ -76,13 +182,25 @@ form{ /* Hides textbox initially*/
 
 <br><br><br><br><br><br>
 
-<div id="textentry" style="display: none; animation: fadein .75s; animation-fill-mode: forwards;">
-	<textarea type="text" style="height: 200px" placeholder="Today I..."></textarea><br>
-	<submitButton class="btn-group">
-		<button class="button">Submit</button>
-	</submitButton>
-
+<div id="textentry" class="txt">
+	
+	<textarea form="usrentry" type="text" name="entryData" style="height: 200px" placeholder="Today I..."></textarea><br>
+	<form action="action.php" id="usrentry" method="post">
+		<input type="submit" class="button">
+	</form>
+	
 </div>
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -93,10 +211,50 @@ function button1() {
 	var x = document.getElementById("textentry");
     if (x.style.display != "block") {
         x.style.display = "block";
-    } /*else {
-        x.style.display = "none";
-    }*/
+    }
+
+    var y = document.getElementById("usrentry");
+    if (y.style.display != "block") {
+        y.style.display = "block";
+    } 
+
+    var a = document.getElementById("viz");
+    if (a.style.display != "none") {
+        a.style.display = "none";
+    }
+
+    var b = document.getElementById("controls");
+    if (b.style.display != "none") {
+        b.style.display = "none";
+    }
 }
+
+
+
+function button2() {
+
+	var x = document.getElementById("textentry");
+    if (x.style.display != "none") {
+        x.style.display = "none";
+    }
+
+    var y = document.getElementById("usrentry");
+    if (y.style.display != "none") {
+        y.style.display = "none";
+    } 
+
+	var a = document.getElementById("viz");
+    if (a.style.display != "flex") {
+        a.style.display = "flex";
+    }
+
+    var b = document.getElementById("controls");
+    if (b.style.display != "flex") {
+        b.style.display = "flex";
+    }
+}
+
+
 </script>
 
 </center>
