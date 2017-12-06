@@ -20,6 +20,12 @@ def api_entries():
         entry = models.Entry.create(content='Hello world')
         return flask.jsonify(entry.to_dict())
 
+@app.route('/api/audio', methods=['POST'])
+def audio_to_text():
+	print(request.data)
+
+	#print("not yet implemented")
+
 
 if __name__ == '__main__':
     app.run(port=80, debug=True)
