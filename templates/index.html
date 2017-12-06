@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script type="text/javascript" src="{{ url_for('static', filename = 'js/audiodisplay.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename = 'js/recorderjs/recorder.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename = 'js/main.js') }}"></script>
@@ -173,7 +174,7 @@ form{ /* Hides textbox initially*/
 <div id="controls" class="audio">
 	
 	<img id="record" src="static/img/mic128.png" onclick="toggleRecording(this);">
-	<a id="save" href="#"><img src="static/img/save.svg"></a>
+	<a id="save" onclick="sendAudio()" ref="#"><img src="static/img/save.svg"></a>
 
 </div>
 

@@ -22,9 +22,7 @@ def api_entries():
 
 @app.route('/api/audio', methods=['POST'])
 def audio_to_text():
-	print(request.data)
-
-	#print("not yet implemented")
+	audioFile = request.data
 
 
 if __name__ == '__main__':

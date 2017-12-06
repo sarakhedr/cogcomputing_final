@@ -24,6 +24,7 @@ var rafID = null;
 var analyserContext = null;
 var canvasWidth, canvasHeight;
 var recIndex = 0;
+var savedBlob;
 
 /* TODO:
 
@@ -48,6 +49,7 @@ function gotBuffers( buffers ) {
 }
 
 function doneEncoding( blob ) {
+    savedBlob = blob;
     Recorder.setupDownload( blob, "myRecording" + ((recIndex<10)?"0":"") + recIndex + ".wav" );
     recIndex++;
 }
@@ -181,6 +183,23 @@ function initAudio() {
             alert('Error getting audio');
             console.log(e);
         });
+}
+
+function sendAudio() {
+    console.log("Saving audio...")
+    $.ajax({
+    type: "POST",
+    url: "/api/audio",
+    data: savedBlob,
+    processData: false,
+    contentType: "audio/*",
+    success: function(response) {
+       console.log(response)   
+    },
+    error: function(chr) {
+      console.log("Error!")
+    }
+  });
 }
 
 window.addEventListener('load', initAudio );
