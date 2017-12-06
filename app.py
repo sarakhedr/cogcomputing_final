@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request
 import models
 import requests
+import json
+import datetime
 
 app = Flask(__name__)
 
@@ -24,14 +26,35 @@ def api_entries():
 @app.route('/api/audio', methods=['POST'])
 def audio_to_text():
 	headers = {
-    	'Content-Type': 'audio/flac',
+    	'Content-Type': 'audio/wav',
 	}
 
 	data = request.data#open('audio-file.flac', 'rb').read()
 
+	diaryEntryJSON = {}
+	diaryEntryJSON["date"] = datetime.datetime.now().strftime("%Y-%m-%d")
+	diaryEntryJSON["text"] = []
 	response = requests.post('https://stream.watsonplatform.net/speech-to-text/api/v1/recognize', headers=headers, data=data, auth=('9cd8ec3d-2d11-4884-8f07-fb4ed37c2add', 'Y33pRZN5DizL'))
-	print(reponse.text)
-	print("Response Status: " + str(response.status_code))
+	results = json.loads(response.text)["results"]
+	for a in results:
+		print a
+		confidence = a["alternatives"][0]["confidence"]
+		text = a["alternatives"][0]["transcript"]
+		entry = {}
+		entry["confidence"] = confidence
+		entry["text"] = text
+		diaryEntryJSON["text"].append(entry)
+
+	print diaryEntryJSON
+	
+	response = app.response_class(
+		response = "Successful entry",
+		status = 200,
+		mimetype='application/json'
+	)
+
+	return response
+
 
 if __name__ == '__main__':
     app.run(port=80, debug=True)
