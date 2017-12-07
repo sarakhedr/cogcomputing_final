@@ -39,7 +39,7 @@ def audio_to_text():
 	
 	fullDiaryEntry = ""
 	for a in results:
-		print(a)
+		# print(a)
 		confidence = a["alternatives"][0]["confidence"]
 		text = a["alternatives"][0]["transcript"]
 		entry = {}
@@ -48,9 +48,11 @@ def audio_to_text():
 		diaryEntryJSON["text"].append(entry)
 		fullDiaryEntry = fullDiaryEntry + text
 
-	print(diaryEntryJSON)
+	# print(diaryEntryJSON)
 	
+	# print fullDiaryEntry
 	tone_analyzer(fullDiaryEntry)
+	natural_language_understanding(fullDiaryEntry)
 
 	
 	response = app.response_class(
@@ -72,10 +74,6 @@ def tone_analyzer(diaryEntry):
 	diaryJSON = { "text": diaryEntry}
 
 	response = requests.post('https://gateway.watsonplatform.net/tone-analyzer/api/v3/tone?version=2017-09-21', headers=headers, params=params, data=json.dumps(diaryJSON), auth=('e5cba311-14eb-430c-9796-e9a6928cbc34', '3fCSph25MIyS'))
-
-
-	print(response.text)
-
 	response = json.loads(response.text)
 
 	tones = response["document_tone"]["tones"]
@@ -91,33 +89,67 @@ def tone_analyzer(diaryEntry):
 		toneData["score"] = score
 		toneDict["tones"].append(toneData)
 
-	print(toneDict)
+	# print(toneDict)
+	# print toneDict
 	return toneDict
-	#return {}
 
 
 def natural_language_understanding(diaryEntry):
 	
-"""
-journalText ="I am a happy person.  Life is good. I can't wait until the weekend.  I am going to Home Depot to get paint supplies"
+	featuresJSON = { "entities": { "emotion": True, "sentiment": True}, "keywords": {"emotion": True, "sentiment": True}, "concepts" :{}}
+	params = { 'text': diaryEntry, 'features': featuresJSON}
+	headers = {'content-type': 'application/json'}
+	response = requests.post('https://gateway.watsonplatform.net/natural-language-understanding/api/v1/analyze?version=2017-02-27', data=json.dumps(params), auth=('e75712e0-ea3c-4c29-bc12-950198a900ef', 'HeTGScuehCDq'), headers=headers)
 
-featuresJSON = { "entities": { "emotion": True, "sentiment": True}, "keywords": {"emotion": True, "sentiment": True}, "concepts" :{}}
+	data = {}
+	data["keywords"] = []
+	data["entities"] = []
+	response = json.loads(response.text)
 
-params = { 'text': journalText, 'features': featuresJSON}
+	# Parse keywords
+	for k in response["keywords"]:
+		keywordData = {}
 
-headers = {'content-type': 'application/json'}
+		keyword = k["text"]
+		relevance = k["relevance"]
+		emotions = compute_top_emotions(k["emotion"])
+		keywordData["keyword"] = keyword
+		keywordData["relevance"] = relevance
+		keywordData["emotions"] = emotions
+
+		data["keywords"].append(keywordData)
+
+	for e in response["entities"]:
+		entityData = {}
+
+		entity = e["text"]
+		typeEntity = e["type"]
+		sentiment = e["sentiment"]["label"]
+
+		entityData["entity"] = entity
+		entityData["type"] = typeEntity
+		entityData["sentiment"] = sentiment
+
+		data["entities"].append(entityData)
+
+	# print data
+	return data
+
+def compute_top_emotions(emotionDict):
+	curMax = 0
+	for key, value in emotionDict.iteritems():
+		if value > curMax:
+			curMax = value
 
 
+	newEmotions = []
+	for key, value in emotionDict.iteritems():
+		
+		if value > .8*curMax:
+			newEmotions.append(key)
 
-response = requests.post('https://gateway.watsonplatform.net/natural-language-understanding/api/v1/analyze?version=2017-02-27', data=json.dumps(params), auth=('e75712e0-ea3c-4c29-bc12-950198a900ef', 'HeTGScuehCDq'), headers=headers)
-
-print(response.text)
-
-"""
-
-	return {}
-
+	return newEmotions
 
 
 if __name__ == '__main__':
-    app.run(port=80, debug=True)
+    app.run(debug=True)
