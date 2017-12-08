@@ -185,10 +185,10 @@ form{ /* Hides textbox initially*/
 
 <div id="textentry" class="txt">
 	
-	<textarea form="usrentry" type="text" name="entryData" style="height: 200px" placeholder="Today I..."></textarea><br>
-	<form action="action.php" id="usrentry" method="post">
-		<input type="submit" class="button">
-	</form>
+	<textarea id="textEntry" form="usrentry" type="text" name="entryData" style="height: 200px" placeholder="Today I..."></textarea><br>
+	<div id="usrentry">
+		<input type="submit" class="button" onclick="submitTextEntry()">
+	</div>
 	
 </div>
 

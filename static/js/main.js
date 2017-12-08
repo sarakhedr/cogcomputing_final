@@ -202,4 +202,22 @@ function sendAudio() {
   });
 }
 
+function submitTextEntry() {
+    var textEntry = $("#textEntry").val()
+    $.ajax({
+    type: "POST",
+    url: "/api/text",
+    data: textEntry,
+    processData: false,
+    contentType: "audio/*",
+    success: function(response) {
+       console.log(response)
+       location.reload()
+    },
+    error: function(chr) {
+      console.log("Error!")
+    }
+  });
+}
+
 window.addEventListener('load', initAudio );

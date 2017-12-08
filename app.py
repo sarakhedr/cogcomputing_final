@@ -23,6 +23,29 @@ def api_entries():
         entry = models.Entry.create(content='Hello world')
         return flask.jsonify(entry.to_dict())
 
+@app.route('/api/text', methods=['POST'])
+def text():
+	textEntry = request.data
+	# print textEntry
+
+	diaryEntryJSON = {}
+	diaryEntryJSON["date"] = datetime.datetime.now().strftime("%Y-%m-%d")
+	diaryEntryJSON["text"] = []
+	diaryEntryJSON["text"].append({"text": textEntry, "confidence": 1.0})
+	# print diaryEntryJSON
+
+	tone_analyzer(textEntry)
+	natural_language_understanding(textEntry)
+
+	response = app.response_class(
+		response = json.dumps({}),
+		status = 200,
+		mimetype='application/json'
+	)
+
+	return response
+	
+
 @app.route('/api/audio', methods=['POST'])
 def audio_to_text():
 	headers = {
@@ -56,7 +79,7 @@ def audio_to_text():
 
 	
 	response = app.response_class(
-		response = "Successful entry",
+		response = json.dumps({}),
 		status = 200,
 		mimetype='application/json'
 	)
