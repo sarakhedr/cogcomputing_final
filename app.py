@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 import models
 import requests
 import json
@@ -16,12 +16,12 @@ def dashboard():
 
 @app.route('/api/entries', methods=['GET', 'POST'])
 def api_entries():
-    if flask.request.method == 'GET':
+    if request.method == 'GET':
         entries = [entry.to_dict() for entry in models.Entry.select()]
-        return flask.jsonify(entries)
-    elif flask.request.method == 'POST':
+        return jsonify(entries)
+    elif request.method == 'POST':
         entry = models.Entry.create(content='Hello world')
-        return flask.jsonify(entry.to_dict())
+        return jsonify(entry.to_dict())
 
 @app.route('/api/text', methods=['POST'])
 def text():
@@ -44,7 +44,7 @@ def text():
 	)
 
 	return response
-	
+
 
 @app.route('/api/audio', methods=['POST'])
 def audio_to_text():
@@ -59,7 +59,7 @@ def audio_to_text():
 	diaryEntryJSON["text"] = []
 	response = requests.post('https://stream.watsonplatform.net/speech-to-text/api/v1/recognize', headers=headers, data=data, auth=('9cd8ec3d-2d11-4884-8f07-fb4ed37c2add', 'Y33pRZN5DizL'))
 	results = json.loads(response.text)["results"]
-	
+
 	fullDiaryEntry = ""
 	for a in results:
 		# print(a)
@@ -72,12 +72,12 @@ def audio_to_text():
 		fullDiaryEntry = fullDiaryEntry + text
 
 	# print(diaryEntryJSON)
-	
+
 	# print fullDiaryEntry
 	tone_analyzer(fullDiaryEntry)
 	natural_language_understanding(fullDiaryEntry)
 
-	
+
 	response = app.response_class(
 		response = json.dumps({}),
 		status = 200,
@@ -107,7 +107,7 @@ def tone_analyzer(diaryEntry):
 	for i in tones:
 		score = i["score"]
 		name = i["tone_name"]
-		toneData = {}	
+		toneData = {}
 		toneData["tone"] = name
 		toneData["score"] = score
 		toneDict["tones"].append(toneData)
@@ -118,7 +118,7 @@ def tone_analyzer(diaryEntry):
 
 
 def natural_language_understanding(diaryEntry):
-	
+
 	featuresJSON = { "entities": { "emotion": True, "sentiment": True}, "keywords": {"emotion": True, "sentiment": True}, "concepts" :{}}
 	params = { 'text': diaryEntry, 'features': featuresJSON}
 	headers = {'content-type': 'application/json'}
@@ -167,7 +167,7 @@ def compute_top_emotions(emotionDict):
 
 	newEmotions = []
 	for key, value in emotionDict.iteritems():
-		
+
 		if value > .8*curMax:
 			newEmotions.append(key)
 
