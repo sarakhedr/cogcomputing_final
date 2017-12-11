@@ -108,6 +108,20 @@ def api_keywords():
 	return jsonify(keywords)
 
 
+@app.route('/api/date-range')
+def api_date_range():
+	min_entry = models.Entry.select().order_by(models.Entry.time.asc()).get()
+	max_entry = models.Entry.select().order_by(models.Entry.time.desc()).get()
+	if min_entry is None:
+		info = {'min_date': None, 'max_date': None}
+	else:
+		info = {
+			'min_date': datetime.datetime.strftime(min_entry.time, '%Y-%m-%d'),
+			'max_date': datetime.datetime.strftime(max_entry.time, '%Y-%m-%d')
+		}
+	return jsonify(info)
+
+
 @app.route('/api/text', methods=['POST'])
 def text():
 	textEntry = request.data.decode('utf-8')
