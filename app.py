@@ -28,6 +28,17 @@ def api_entries():
 		jsonEntries.append(jsonEntry)
 	return jsonify(jsonEntries)
 
+@app.route('/api/tone-breakdown')
+def api_tone_breakdown():
+	tones = {}
+	for entry in models.Entry.select():
+		for tone in json.loads(entry.tone_analysis)['tones']:
+			try:
+				tones[tone['tone']] += 1
+			except KeyError:
+				tones[tone['tone']] = 1
+	return jsonify(tones)
+
 
 @app.route('/api/text', methods=['POST'])
 def text():
