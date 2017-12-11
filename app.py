@@ -3,6 +3,7 @@ import models
 import requests
 import json
 import datetime
+import collections
 
 app = Flask(__name__)
 
@@ -53,6 +54,31 @@ def api_tone_breakdown():
 			except KeyError:
 				tones[tone] = 1
 	return jsonify(tones)
+
+
+@app.route('/api/tone-trend')
+def api_tone_trend():
+	startDateParam = request.args.get('startDate')
+	endDateParam = request.args.get('endDate')
+	start_date = datetime.datetime.strptime(startDateParam, "%Y-%m-%d")
+	# add one day to end date because we want it to be inclusive
+	end_date = datetime.datetime.strptime(endDateParam, "%Y-%m-%d") + datetime.timedelta(days=1)
+
+	cur_date = start_date
+	days = collections.OrderedDict()
+	while cur_date < end_date:
+		print(cur_date)
+		entries = models.Entry.select().where(models.Entry.time >= cur_date,
+			models.Entry.time < cur_date + datetime.timedelta(days=1))
+
+		tones = set()
+		for entry in entries:
+			for tone in json.loads(entry.tone_analysis)['tones']:
+				tones.add(tone['tone'])
+		days[datetime.datetime.strftime(cur_date, '%Y-%m-%d')] = list(tones)
+
+		cur_date += datetime.timedelta(days=1)
+	return jsonify(days)
 
 
 @app.route('/api/text', methods=['POST'])
