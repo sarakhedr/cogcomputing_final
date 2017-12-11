@@ -5,6 +5,7 @@ import playhouse.shortcuts
 
 db = peewee.SqliteDatabase('journalapp.db')
 
+
 class Base(peewee.Model):
 
     def to_dict(self):
@@ -16,8 +17,11 @@ class Base(peewee.Model):
 
 class Entry(Base):
     time = peewee.DateTimeField(default=datetime.datetime.now)
-    content = peewee.TextField()
+    text = peewee.BlobField()
+    # Watson Tone Analyzer
+    tone_analysis = peewee.BlobField()
+    # Watson Natural Language Understanding
+    nlu_analysis = peewee.BlobField()
 
 
 db.create_tables([Entry], safe=True)
-

@@ -14,28 +14,34 @@ def home():
 def dashboard():
 	return render_template("dashboard.html")
 
-@app.route('/api/entries', methods=['GET', 'POST'])
+
+@app.route('/api/entries')
 def api_entries():
-    if request.method == 'GET':
-        entries = [entry.to_dict() for entry in models.Entry.select()]
-        return jsonify(entries)
-    elif request.method == 'POST':
-        entry = models.Entry.create(content='Hello world')
-        return jsonify(entry.to_dict())
+	jsonEntries = []
+	for entry in models.Entry.select():
+		jsonEntry = {
+		'text': json.loads(entry.text),
+		'tone_analysis': json.loads(entry.tone_analysis),
+		'nlu_analysis': json.loads(entry.nlu_analysis),
+		'time': entry.time,
+		}
+		jsonEntries.append(jsonEntry)
+	return jsonify(jsonEntries)
+
 
 @app.route('/api/text', methods=['POST'])
 def text():
-	textEntry = request.data
-	# print textEntry
+	textEntry = request.data.decode('utf-8')
+	text = [{"text": textEntry, "confidence": 1.0}]
 
-	diaryEntryJSON = {}
-	diaryEntryJSON["date"] = datetime.datetime.now().strftime("%Y-%m-%d")
-	diaryEntryJSON["text"] = []
-	diaryEntryJSON["text"].append({"text": textEntry, "confidence": 1.0})
-	# print diaryEntryJSON
+	tone = tone_analyzer(textEntry)
+	nlu = natural_language_understanding(textEntry)
 
-	tone_analyzer(textEntry)
-	natural_language_understanding(textEntry)
+	entry = models.Entry.create(
+		text=json.dumps(text),
+		tone_analysis=json.dumps(tone),
+		nlu_analysis=json.dumps(nlu),
+	)
 
 	response = app.response_class(
 		response = json.dumps({}),
@@ -160,13 +166,13 @@ def natural_language_understanding(diaryEntry):
 
 def compute_top_emotions(emotionDict):
 	curMax = 0
-	for key, value in emotionDict.iteritems():
+	for key, value in emotionDict.items():
 		if value > curMax:
 			curMax = value
 
 
 	newEmotions = []
-	for key, value in emotionDict.iteritems():
+	for key, value in emotionDict.items():
 
 		if value > .8*curMax:
 			newEmotions.append(key)
