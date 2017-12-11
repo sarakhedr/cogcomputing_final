@@ -80,9 +80,14 @@ def audio_to_text():
 	# print(diaryEntryJSON)
 
 	# print fullDiaryEntry
-	tone_analyzer(fullDiaryEntry)
-	natural_language_understanding(fullDiaryEntry)
+	tone = tone_analyzer(fullDiaryEntry)
+	nlu = natural_language_understanding(fullDiaryEntry)
 
+	entry = models.Entry.create(
+		text=json.dumps(diaryEntryJSON['text']),
+		tone_analysis=json.dumps(tone),
+		nlu_analysis=json.dumps(nlu),
+	)
 
 	response = app.response_class(
 		response = json.dumps({}),
