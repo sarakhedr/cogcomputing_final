@@ -42,11 +42,16 @@ def api_tone_breakdown():
 
 	tones = {}
 	for entry in entries:
+		# add tones from each entry to a set so multiple tones in the same entry
+		# only increase overall count by one
+		entry_tones = set()
 		for tone in json.loads(entry.tone_analysis)['tones']:
+			entry_tones.add(tone['tone'])
+		for tone in entry_tones:
 			try:
-				tones[tone['tone']] += 1
+				tones[tone] += 1
 			except KeyError:
-				tones[tone['tone']] = 1
+				tones[tone] = 1
 	return jsonify(tones)
 
 
