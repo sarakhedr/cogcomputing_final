@@ -4,6 +4,7 @@ import requests
 import json
 import datetime
 import collections
+import operator
 
 app = Flask(__name__)
 
@@ -105,7 +106,12 @@ def api_keywords():
 						keywords[keyword_analysis['keyword']] = keyword_analysis['relevance']
 
 		cur_date += datetime.timedelta(days=1)
-	return jsonify(keywords)
+
+	if request.args.get('k') is None:
+		return jsonify(keywords)
+	k = int(request.args.get('k'))
+	k_highest = dict(sorted(keywords.items(), key=operator.itemgetter(1), reverse=True)[:k])
+	return jsonify(k_highest)
 
 
 @app.route('/api/date-range')
