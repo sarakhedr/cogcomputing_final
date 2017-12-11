@@ -30,8 +30,18 @@ def api_entries():
 
 @app.route('/api/tone-breakdown')
 def api_tone_breakdown():
+	startDateParam = request.args.get('startDate')
+	endDateParam = request.args.get('endDate')
+	if startDateParam is not None and endDateParam is not None:
+		startDate = datetime.datetime.strptime(startDateParam, "%Y-%m-%d")
+		# add one day to end date because we want it to be inclusive
+		endDate = datetime.datetime.strptime(endDateParam, "%Y-%m-%d") + datetime.timedelta(days=1)
+		entries = models.Entry.select().where(models.Entry.time > startDate, models.Entry.time < endDate)
+	else:
+		entries = models.Entry.select()
+
 	tones = {}
-	for entry in models.Entry.select():
+	for entry in entries:
 		for tone in json.loads(entry.tone_analysis)['tones']:
 			try:
 				tones[tone['tone']] += 1
