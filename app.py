@@ -29,6 +29,7 @@ def api_entries():
 		jsonEntries.append(jsonEntry)
 	return jsonify(jsonEntries)
 
+
 @app.route('/api/tone-breakdown')
 def api_tone_breakdown():
 	startDateParam = request.args.get('startDate')
@@ -67,7 +68,6 @@ def api_tone_trend():
 	cur_date = start_date
 	days = collections.OrderedDict()
 	while cur_date < end_date:
-		print(cur_date)
 		entries = models.Entry.select().where(models.Entry.time >= cur_date,
 			models.Entry.time < cur_date + datetime.timedelta(days=1))
 
@@ -79,6 +79,33 @@ def api_tone_trend():
 
 		cur_date += datetime.timedelta(days=1)
 	return jsonify(days)
+
+
+@app.route('/api/keywords')
+def api_keywords():
+	emotion = request.args.get('emotion')
+	startDateParam = request.args.get('startDate')
+	endDateParam = request.args.get('endDate')
+	start_date = datetime.datetime.strptime(startDateParam, "%Y-%m-%d")
+	# add one day to end date because we want it to be inclusive
+	end_date = datetime.datetime.strptime(endDateParam, "%Y-%m-%d") + datetime.timedelta(days=1)
+
+	cur_date = start_date
+	keywords = {}
+	while cur_date < end_date:
+		entries = models.Entry.select().where(models.Entry.time >= cur_date,
+			models.Entry.time < cur_date + datetime.timedelta(days=1))
+
+		for entry in entries:
+			for keyword_analysis in json.loads(entry.nlu_analysis)['keywords']:
+				if emotion in keyword_analysis['emotions']:
+					try:
+						keywords[keyword_analysis['keyword']] += keyword_analysis['relevance']
+					except KeyError:
+						keywords[keyword_analysis['keyword']] = keyword_analysis['relevance']
+
+		cur_date += datetime.timedelta(days=1)
+	return jsonify(keywords)
 
 
 @app.route('/api/text', methods=['POST'])
