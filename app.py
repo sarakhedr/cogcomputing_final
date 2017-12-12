@@ -17,18 +17,45 @@ def dashboard():
 	return render_template("dashboard.html")
 
 
-@app.route('/api/entries')
-def api_entries():
+@app.route('/api/entries-all')
+def api_entries_all():
 	jsonEntries = []
 	for entry in models.Entry.select():
 		jsonEntry = {
-		'text': json.loads(entry.text),
-		'tone_analysis': json.loads(entry.tone_analysis),
-		'nlu_analysis': json.loads(entry.nlu_analysis),
-		'time': entry.time,
+			'text': json.loads(entry.text),
+			'tone_analysis': json.loads(entry.tone_analysis),
+			'nlu_analysis': json.loads(entry.nlu_analysis),
+			'time': entry.time,
+			'type': entry.type,
 		}
 		jsonEntries.append(jsonEntry)
 	return jsonify(jsonEntries)
+
+
+@app.route('/api/entries')
+def api_entries():
+	startDateParam = request.args.get('startDate')
+	endDateParam = request.args.get('endDate')
+	if startDateParam is not None and endDateParam is not None:
+		start_date = datetime.datetime.strptime(startDateParam, "%Y-%m-%d")
+		# add one day to end date because we want it to be inclusive
+		end_date = datetime.datetime.strptime(endDateParam, "%Y-%m-%d") + datetime.timedelta(days=1)
+
+		entries = models.Entry.select().where(models.Entry.time >= start_date,
+			models.Entry.time < end_date)
+	else:
+		entries = models.Entry.select()
+
+	entries_json = []
+	for entry in entries:
+		json_entry = {
+			'text': ''.join((t['text'] for t in json.loads(entry.text))),
+			'date': entry.time,
+			'type': entry.type,
+		}
+		entries_json.append(json_entry)
+
+	return jsonify(entries_json)
 
 
 @app.route('/api/tone-breakdown')
@@ -140,6 +167,7 @@ def text():
 		text=json.dumps(text),
 		tone_analysis=json.dumps(tone),
 		nlu_analysis=json.dumps(nlu),
+		type='text',
 	)
 
 	response = app.response_class(
@@ -186,6 +214,7 @@ def audio_to_text():
 		text=json.dumps(diaryEntryJSON['text']),
 		tone_analysis=json.dumps(tone),
 		nlu_analysis=json.dumps(nlu),
+		type='audio',
 	)
 
 	response = app.response_class(

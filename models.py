@@ -22,6 +22,7 @@ class Entry(Base):
     tone_analysis = peewee.BlobField()
     # Watson Natural Language Understanding
     nlu_analysis = peewee.BlobField()
+    type = peewee.TextField()
 
 
 db.create_tables([Entry], safe=True)
