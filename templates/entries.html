@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+		<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename = 'js/entries.js') }}"></script>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+		<style>
+
+			#container_ {
+				background-color: white;
+				border: 10px white solid;
+			}
+
+			#header_ {
+				background-color: #a55252;
+				text-align: center;
+				padding-top: 1px;
+				padding-bottom: 1px;
+			}
+
+			#allentries {
+				margin-left: 400px;
+				float: right;
+				margin-left:  50px;
+				width: 950px;
+			}
+
+			.entry_ {
+				border: 4px #941B1B solid;
+				padding: 5px;
+				background-color: #c99191;
+				margin-top:10px;
+				width: 950px;
+			}
+
+			.entry_title {
+				padding-left: 5px;
+				display: inline-flex;
+				margin-left: 20px;
+			}
+
+			.entry_text {
+				padding: 10px;
+				margin-left: 0px;
+			}
+
+			.body_ {
+				padding-left: 125px;
+				padding-right: 125px;
+			}
+
+			#settings {
+				width: 250px;
+				float: left;
+				margin-left: 50px;
+				height: 125px;
+			}
+
+			#content_ {
+				display: inline-flex;
+			}
+	</style>
+	</head>
+
+	<body class="body_">
+		<div id="container_">
+			<div id="header_">
+				<h1> Journal Entries </h1>
+			</div>
+		</div>
+
+		<div class="row" id="content_">
+			<div class="panel panel-default" id="settings">
+				<div class="panel-heading"> </div>
+				<div class = "panel-body"> 
+					<label style="padding-right:20px">Date Range:</label>
+ 					<div style="margin-left:5px; display:inline">
+ 						<input type="text" name="daterange" style="padding:5px"/>
+ 					</div>
+				</div>
+			</div>
+
+			<div id="allentries">
+			</div>
+		</div>
+	</body>
+</html>

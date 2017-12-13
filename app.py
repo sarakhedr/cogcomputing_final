@@ -16,6 +16,10 @@ def home():
 def dashboard():
 	return render_template("dashboard.html")
 
+@app.route("/entries")
+def entries():
+	return render_template("entries.html")
+
 
 @app.route('/api/entries-all')
 def api_entries_all():
@@ -314,4 +318,4 @@ def compute_top_emotions(emotionDict):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(port=8080, debug=True)

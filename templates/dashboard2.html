@@ -1,0 +1,56 @@
+<html>
+	<head>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename = 'js/dashboard.js') }}"></script>
+		<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+		<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+		<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+		<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+		<script type="text/javascript">
+		  // Load the Visualization API library and the piechart library.
+		  google.charts.load("current", {packages:["corechart"]});
+		  google.setOnLoadCallback(drawPieChart);
+		  google.setOnLoadCallback(drawStackedChart);
+		</script>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+	</head
+</html>
+
+<body>
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<ul class="nav navbar-nav navbar-right">
+			<li>
+				<a style="margin-right: 20px" href="/"> Home </a>
+			</li>
+		</ul>
+	</nav>
+
+	<div id="header" style="width: 1550px; margin-top: 75px; margin-left: 25px; z-index: 2">
+		<h1> Emotion Dashboard </h1>
+		<hr/>
+	</div>
+	<div class="panel panel-default" style="width: 400px; margin-left: 25px;">
+		<div class="panel-heading"> </div>
+		<div class = "panel-body"> 
+			<div>
+ 				<label style="padding-right:20px">Date Range:</label>
+ 				<div style="margin-left:5px; display:inline">
+ 					<input type="text" name="daterange" style="padding:5px"/>
+ 				</div>
+ 			</div>
+		</div>
+	</div>
+	<div class="row" style="display: inline-flex">
+		<div style="width:600px; float: left; margin-top: -40px; z-index: -1">
+			<div id="tonePieChart" style="width: 500px; height: 425px;"></div>
+		</div>
+		<div style="float: right; width: 900px; z-index: -1">
+			<div style="width:600px; margin-top: -25px; margin-left: -175px">
+				<div id="toneStackedChart" style="width: 1000px; height: 350px;"></div>
+			</div>
+		</div>
+	</div>
+</body>
