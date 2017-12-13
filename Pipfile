@@ -13,3 +13,5 @@ name = "pypi"
 
 flask = "*"
 peewee = "*"
+gunicorn = "*"
+gevent = "*"
